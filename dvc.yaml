@@ -1,0 +1,45 @@
+stages:
+  preprocessing:
+    cmd: python src/features/data_preprocessing.py
+    deps:
+      - data/interim/smartphones_final_clean.csv
+      - src/features/data_preprocessing.py
+    params:
+      - data_ingestion.test_size  
+    outs:
+      - data/processed/train.csv  
+      - data/processed/test.csv  
+
+  model_building:
+    cmd: python src/model/model_building.py
+    deps: 
+      - data/processed/train.csv 
+      - src/model/model_building.py
+    params:
+      - model.learning_rate
+      - model.n_estimators
+      - model.max_depth
+      - model.min_child_weight
+      - model.subsample
+      - model.colsample_bytree
+      - model.gamma
+      - model.reg_alpha
+      - model.reg_lambda
+      - model.random_state
+    outs:
+      - models/model.pkl
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+    - models/model.pkl
+    - src/model/model_evaluation.py
+    metrics:
+    - reports/metrics.json
+    outs:
+    - reports/experiment_info.json 
+  model_registration:
+    cmd: python src/model/register_model.py
+    deps:
+    - reports/experiment_info.json
+    - src/model/register_model.py
+      

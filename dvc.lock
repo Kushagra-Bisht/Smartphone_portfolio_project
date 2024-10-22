@@ -1,0 +1,84 @@
+schema: '2.0'
+stages:
+  preprocessing:
+    cmd: python src/features/data_preprocessing.py
+    deps:
+    - path: data/interim/smartphones_final_clean.csv
+      hash: md5
+      md5: 29fb3400a78e0ec0a5043f545c7c2ea4
+      size: 180414
+    - path: src/features/data_preprocessing.py
+      hash: md5
+      md5: fd44c233dec14c9d58dbffd9debd7e99
+      size: 3326
+    params:
+      params.yaml:
+        data_ingestion.test_size: 0.21
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: d4f02db2d7874869a151ed01e24ad0d3
+      size: 42839
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 7fd96964c1b6daed0776a36b655822e0
+      size: 161799
+  model_building:
+    cmd: python src/model/model_building.py
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 7fd96964c1b6daed0776a36b655822e0
+      size: 161799
+    - path: src/model/model_building.py
+      hash: md5
+      md5: 358824dc07b7b983ca4b80c4012a7c12
+      size: 6431
+    params:
+      params.yaml:
+        model.colsample_bytree: 0.6221149729127035
+        model.gamma: 4.48032662619819
+        model.learning_rate: 0.15933315661811834
+        model.max_depth: 9
+        model.min_child_weight: 1
+        model.n_estimators: 272
+        model.random_state: 42
+        model.reg_alpha: 0.8688526217318796
+        model.reg_lambda: 0.4660114566903573
+        model.subsample: 0.8261207403464462
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: a90707ef18f9ceecf7fa2eaa5070364d
+      size: 2399404
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+    - path: models/model.pkl
+      hash: md5
+      md5: a90707ef18f9ceecf7fa2eaa5070364d
+      size: 2399404
+    - path: src/model/model_evaluation.py
+      hash: md5
+      md5: 5ed75176f80593df61e28924eec86589
+      size: 6091
+    outs:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: f00c443191f20ca2a0d2c7614875a9ac
+      size: 82
+    - path: reports/metrics.json
+      hash: md5
+      md5: e0349ebbd72b14db65ebd519fec2a9d2
+      size: 87
+  model_registration:
+    cmd: python src/model/register_model.py
+    deps:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: f00c443191f20ca2a0d2c7614875a9ac
+      size: 82
+    - path: src/model/register_model.py
+      hash: md5
+      md5: 4bbe67ffe34aa6878d3c2869ac466128
+      size: 2716
