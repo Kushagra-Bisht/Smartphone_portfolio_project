@@ -29,6 +29,10 @@ jobs:
       - name: Pull DVC data
         run: dvc pull
 
+      - name: Checkout DVC files
+        run: |
+          dvc checkout
+
       - name: run pipeline
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
